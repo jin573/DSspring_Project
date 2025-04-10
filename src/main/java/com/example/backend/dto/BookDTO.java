@@ -22,4 +22,13 @@ public class BookDTO {
         this.author = entity.getAuthor();
         this.publisher = entity.getPublisher();
     }
+
+    public static BookEntity toEntity(final BookDTO bookDTO){
+        return BookEntity.builder()
+                .userId(bookDTO.getUserId())
+                .title(bookDTO.getTitle())
+                .author(bookDTO.getAuthor())
+                .publisher(bookDTO.getPublisher())
+                .build();
+    }
 }
