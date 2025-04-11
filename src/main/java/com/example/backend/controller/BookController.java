@@ -21,22 +21,24 @@ public class BookController {
     private BookService bookService;
 
 
-    //bookDTO 객체를 데이터베이스에 입력하고 기존의 리스트에 추가하여 전체 데이터를 반환한다.
+    /*
+    * bookDTO 객체를 입력하고
+    * 추가 시 마다, 전체 리스트를 반환해야 한다.*/
     @PostMapping
     public ResponseEntity<?> createBook(@RequestBody BookDTO bookDTO){
         try{
+            //userID는 본인의 영문명으로 해야 하므로 코드 안에서 임의로 저장한다.
             String temporaryUserId = "KimJinSeon";
-            //entity 객체를 생성
             BookEntity bookEntity = BookDTO.toEntity(bookDTO);
             bookEntity.setId(null);
             bookEntity.setUserId(temporaryUserId);
-            //entity 리스트에 추가
+
+            //entity 리스트에 추가한다.
             List<BookEntity> bookEntityList = bookService.createBook(bookEntity);
 
-            //response body에 담기 위해 dto로 변경
+            //response body에 담기 위해 dto로 변경한다.
             List<BookDTO> bookDTOList = bookEntityList.stream().map(BookDTO::new).collect(Collectors.toList());
             ResponseDTO<BookDTO> responseDTO = ResponseDTO.<BookDTO>builder().data(bookDTOList).build();
-
             return  ResponseEntity.ok().body(responseDTO);
         }catch (Exception e){
             String error = e.getMessage();
@@ -45,68 +47,71 @@ public class BookController {
         }
     }
 
-    //userID 가 가지고 있는 모든 도서 데이터를 반환
+    /*userID 가 가지고 있는 모든 도서 데이터를 반환한다. */
     @GetMapping
     public ResponseEntity<?> getAllBookList(){
+        //userid 로 저장된 book entity 검색한다.
         String temporaryUserId = "KimJinSeon";
-        //userid 로 저장된 book entity 검색
         List<BookEntity> bookEntityList = bookService.getAllBookList(temporaryUserId);
-        //response body에 담기 위해 dto로 변경
+
+        //response body에 담기 위해 dto로 변경한다.
         List<BookDTO> bookDTOList = bookEntityList.stream().map(BookDTO::new).collect(Collectors.toList());
         ResponseDTO<BookDTO> responseDTO = ResponseDTO.<BookDTO>builder().data(bookDTOList).build();
         return ResponseEntity.ok().body(responseDTO);
     }
 
-    //전체 데이터가 아닌 특정 book dto를 검색했을 때 반환
+    /*제품의 title이 JSON 형태로 입력되면
+    * 해당하는 bookEntity를 반환해야 한다.*/
     @GetMapping("/search")
     public ResponseEntity<?> getBookToList(@RequestBody BookDTO bookDTO){
         /* 클라이언트가 book title을 검색 시
-        * 해당하는 dto 객체들 responseEntity 에 담아 반환한다.
         * 동일한 책 제목의 다른 출반사가 있을 수 있으므로, list 형태로 반환한다.
-        * userid 로 저장된 book entity 검색*/
+        * 모든 titel이 아닌, 클라이언트의 bookList 중에서 반환해야 하므로 userID와 함께 검색한다.*/
         String temporaryUserId = "KimJinSeon";
         List<BookEntity> bookEntityList = bookService.getBookToList(temporaryUserId, bookDTO.getTitle()); //service에서 검색하여 entity에 반환
         System.out.println(bookEntityList.stream().toList());
 
-        /*responseEntity에 담아 반환하기 위해
-        * 1. bookEntity를 bookDTO로 변환
-        * 2. bookDTO를 responseDTO에 담음
-        * 3. responseEntity에 responseDTO를 담아 반환한다.*/
-        List<BookDTO> bookDTOList = bookEntityList.stream().map(BookDTO::new).collect(Collectors.toList()); //1
-        ResponseDTO<BookDTO> responseDTO = ResponseDTO.<BookDTO>builder().data(bookDTOList).build(); //2
-        return ResponseEntity.ok().body(responseDTO); //3
-    }
-
-    @PutMapping
-    public ResponseEntity<?> updateBook(@RequestBody BookDTO bookDTO){
-        //클라이언트가 book 의 정보를 복제하여 검색하면
-        //service에서
-        //id 속성 값을 활용하여 제품을 검색해야 한다.
-        //그 후 수정된 정보를 반환
-
-        String temporaryUserId = "KimJinSeon"; //dto에는 book 속성만 있으므로 userID를 우선 추가한다.
-        BookEntity bookEntity = BookDTO.toEntity(bookDTO);
-        bookEntity.setUserId(temporaryUserId);
-
-        //service에서 id로 제품을 검색한다.
-        List<BookEntity> bookEntityList = bookService.updateBook(bookEntity);
-
-        //response
+        //response body에 담기 위해 dto로 변경한다.
         List<BookDTO> bookDTOList = bookEntityList.stream().map(BookDTO::new).collect(Collectors.toList());
         ResponseDTO<BookDTO> responseDTO = ResponseDTO.<BookDTO>builder().data(bookDTOList).build();
         return ResponseEntity.ok().body(responseDTO);
     }
 
+    /*클라이언트는 검색 된 책 데이터들 중 하나의 제품 정보를 복사하여
+    * title만 수정한다.
+    * 해당 id의 제품 정보를 검색하고,
+    * title 값을 수정해야 한다.
+    * 수정된 제품의 정보만 반환한다.*/
+    @PutMapping
+    public ResponseEntity<?> updateBook(@RequestBody BookDTO bookDTO){
+        //입력된 dto에 userID를 추가해준다.
+        String temporaryUserId = "KimJinSeon";
+        BookEntity bookEntity = BookDTO.toEntity(bookDTO);
+        bookEntity.setUserId(temporaryUserId);
+
+        //해당 dto가 존재하는지 확인 후 있으면 새로운 title로 변경한다.
+        List<BookEntity> bookEntityList = bookService.updateBook(bookEntity);
+
+        //response body에 담기 위해 dto로 변경한다.
+        List<BookDTO> bookDTOList = bookEntityList.stream().map(BookDTO::new).collect(Collectors.toList());
+        ResponseDTO<BookDTO> responseDTO = ResponseDTO.<BookDTO>builder().data(bookDTOList).build();
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    /*클라이언트는 검색 된 책 데이터들 중 하나의 제품 id만 복사하여 입력한다.
+    * 해당 id를 가진 책 데이터를 삭제한 후
+    * 전체 리스트를 반환한다.*/
     @DeleteMapping
     public ResponseEntity<?> deleteBook(@RequestBody BookDTO bookDTO){
-        //id를 이용하여 삭제한다.
         try{
+            //userID는 임의로 저장되어있으므로 다시 저장한 후 검색한다.
             String temporaryUserId = "KimJinSeon";
-
             BookEntity bookEntity = BookDTO.toEntity(bookDTO);
             bookEntity.setUserId(temporaryUserId);
 
+            //해당 dto가 존재하는지 확인 후 삭제한다.
             List<BookEntity> bookEntityList = bookService.deleteBook(bookEntity);
+
             List<BookDTO> bookDTOList = bookEntityList.stream().map(BookDTO::new).collect(Collectors.toList());
             ResponseDTO<BookDTO> responseDTO = ResponseDTO.<BookDTO>builder().data(bookDTOList).build();
             return ResponseEntity.ok().body(responseDTO);
