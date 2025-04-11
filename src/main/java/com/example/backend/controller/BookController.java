@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Book;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -94,5 +95,25 @@ public class BookController {
         List<BookDTO> bookDTOList = bookEntityList.stream().map(BookDTO::new).collect(Collectors.toList());
         ResponseDTO<BookDTO> responseDTO = ResponseDTO.<BookDTO>builder().data(bookDTOList).build();
         return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteBook(@RequestBody BookDTO bookDTO){
+        //id를 이용하여 삭제한다.
+        try{
+            String temporaryUserId = "KimJinSeon";
+
+            BookEntity bookEntity = BookDTO.toEntity(bookDTO);
+            bookEntity.setUserId(temporaryUserId);
+
+            List<BookEntity> bookEntityList = bookService.deleteBook(bookEntity);
+            List<BookDTO> bookDTOList = bookEntityList.stream().map(BookDTO::new).collect(Collectors.toList());
+            ResponseDTO<BookDTO> responseDTO = ResponseDTO.<BookDTO>builder().data(bookDTOList).build();
+            return ResponseEntity.ok().body(responseDTO);
+        }catch (Exception e){
+            String error = e.getMessage();
+            ResponseDTO<BookDTO> responseDTO = ResponseDTO.<BookDTO>builder().error(error).build();
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
     }
 }
