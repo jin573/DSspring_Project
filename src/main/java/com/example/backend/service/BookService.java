@@ -46,6 +46,7 @@ public class BookService {
         /* case
         * 1. book title에 해당하는 bookEntity가 없는 경우 (0인 경우) -> [] 빈 객체 반환
         * 2. 1개 이상 있는 경우 -> 개수 만큼 출력*/
+        System.out.println(temporaryUserId + " " + bookTitle);
         return bookRepository.findByUserIdAndTitle(temporaryUserId, bookTitle);
     }
 
