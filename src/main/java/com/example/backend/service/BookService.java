@@ -67,4 +67,17 @@ public class BookService {
         * getBookToList를 사용하여 하나의 값만 반환하게 한다.*/
         return getAllBookList(bookEntity.getUserId());
     }
+
+    public List<BookEntity> deleteBook(BookEntity bookEntity) {
+        validate(bookEntity);
+
+        try{
+            bookRepository.delete(bookEntity);
+        }catch (Exception e){
+            log.error("error deleting entity", bookEntity.getId(), e);
+
+            throw new RuntimeException("error deleting entity" + bookEntity.getId());
+        }
+        return getAllBookList(bookEntity.getUserId());
+    }
 }
