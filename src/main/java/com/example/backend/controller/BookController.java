@@ -57,14 +57,15 @@ public class BookController {
     }
 
     //전체 데이터가 아닌 특정 book dto를 검색했을 때 반환
-    @GetMapping("/search/{bookTitle}")
-    public ResponseEntity<?> getBookToList(@PathVariable String bookTitle){
+    @GetMapping("/search")
+    public ResponseEntity<?> getBookToList(@RequestBody BookDTO bookDTO){
         /* 클라이언트가 book title을 검색 시
         * 해당하는 dto 객체들 responseEntity 에 담아 반환한다.
         * 동일한 책 제목의 다른 출반사가 있을 수 있으므로, list 형태로 반환한다.
         * userid 로 저장된 book entity 검색*/
         String temporaryUserId = "KimJinSeon";
-        List<BookEntity> bookEntityList = bookService.getBookToList(temporaryUserId, bookTitle); //service에서 검색하여 entity에 반환
+        List<BookEntity> bookEntityList = bookService.getBookToList(temporaryUserId, bookDTO.getTitle()); //service에서 검색하여 entity에 반환
+        System.out.println(bookEntityList.stream().toList());
 
         /*responseEntity에 담아 반환하기 위해
         * 1. bookEntity를 bookDTO로 변환
