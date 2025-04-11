@@ -11,13 +11,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class BookDTO {
-    private String userId;
+    private String id;
     private String title;
     private String author;
     private String publisher;
 
     public BookDTO(final BookEntity entity){
-        this.userId = entity.getUserId();
+        this.id = entity.getId();
         this.title = entity.getTitle();
         this.author = entity.getAuthor();
         this.publisher = entity.getPublisher();
@@ -25,7 +25,7 @@ public class BookDTO {
 
     public static BookEntity toEntity(final BookDTO bookDTO){
         return BookEntity.builder()
-                .userId(bookDTO.getUserId())
+                .userId(bookDTO.getId())
                 .title(bookDTO.getTitle())
                 .author(bookDTO.getAuthor())
                 .publisher(bookDTO.getPublisher())

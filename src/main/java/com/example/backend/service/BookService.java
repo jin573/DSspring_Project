@@ -19,4 +19,23 @@ public class BookService {
     public List<BookEntity> getBookList(final String temporaryUserId) {
         return bookRepository.findByUserId(temporaryUserId);
     }
+
+    public List<BookEntity> createBook(final BookEntity bookEntity) {
+        validate(bookEntity);
+
+        bookRepository.save(bookEntity);
+        return bookRepository.findByUserId(bookEntity.getUserId());
+    }
+
+    private void validate(BookEntity bookEntity) {
+        if(bookEntity == null){
+            log.warn("Entity cannot be null");
+            throw new RuntimeException();
+        }
+
+        if(bookEntity.getUserId() == null){
+            log.warn("Unknown user.");
+            throw new RuntimeException("Unknown user.");
+        }
+    }
 }
