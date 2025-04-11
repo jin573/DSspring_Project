@@ -20,6 +20,8 @@ public class BookEntity {
     @Id
     @GeneratedValue(generator = "system--uuid")
     @GenericGenerator(name="system--uuid", strategy="uuid")
+    private String id;
+
     private String userId;
     private String title;
     private String author;
