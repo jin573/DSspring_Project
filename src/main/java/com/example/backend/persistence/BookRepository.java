@@ -10,4 +10,6 @@ import java.util.List;
 public interface BookRepository extends JpaRepository<BookEntity, String> {
 
     List<BookEntity> findByUserId(String temporaryUserId);
+
+    List<BookEntity> findByUserIdAndTitle(String temporaryUserId, String bookTitle);
 }
