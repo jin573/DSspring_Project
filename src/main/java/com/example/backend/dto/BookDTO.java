@@ -25,7 +25,7 @@ public class BookDTO {
 
     public static BookEntity toEntity(final BookDTO bookDTO){
         return BookEntity.builder()
-                .userId(bookDTO.getId())
+                .id(bookDTO.getId())
                 .title(bookDTO.getTitle())
                 .author(bookDTO.getAuthor())
                 .publisher(bookDTO.getPublisher())
