@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.awt.print.Book;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -46,5 +47,23 @@ public class BookService {
         * 1. book title에 해당하는 bookEntity가 없는 경우 (0인 경우) -> [] 빈 객체 반환
         * 2. 1개 이상 있는 경우 -> 개수 만큼 출력*/
         return bookRepository.findByUserIdAndTitle(temporaryUserId, bookTitle);
+    }
+
+    public List<BookEntity> updateBook(final BookEntity bookEntity) {
+        validate(bookEntity);
+
+
+        //id 검색으로 해당 entity를 가져온다.
+        final Optional<BookEntity> optionalBookEntity = bookRepository.findById(bookEntity.getId());
+
+        //title을 변경한다.
+        optionalBookEntity.ifPresent(book ->{
+            book.setTitle(bookEntity.getTitle());
+            bookRepository.save(book);
+        });
+
+        /* 변경된 book entity를 반환한다. id는 데이터마다 고유한 값을 가지므로
+        * getBookToList를 사용하여 하나의 값만 반환하게 한다.*/
+        return getAllBookList(bookEntity.getUserId());
     }
 }

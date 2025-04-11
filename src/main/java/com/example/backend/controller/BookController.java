@@ -74,4 +74,24 @@ public class BookController {
         ResponseDTO<BookDTO> responseDTO = ResponseDTO.<BookDTO>builder().data(bookDTOList).build(); //2
         return ResponseEntity.ok().body(responseDTO); //3
     }
+
+    @PutMapping
+    public ResponseEntity<?> updateBook(@RequestBody BookDTO bookDTO){
+        //클라이언트가 book 의 정보를 복제하여 검색하면
+        //service에서
+        //id 속성 값을 활용하여 제품을 검색해야 한다.
+        //그 후 수정된 정보를 반환
+
+        String temporaryUserId = "KimJinSeon"; //dto에는 book 속성만 있으므로 userID를 우선 추가한다.
+        BookEntity bookEntity = BookDTO.toEntity(bookDTO);
+        bookEntity.setUserId(temporaryUserId);
+
+        //service에서 id로 제품을 검색한다.
+        List<BookEntity> bookEntityList = bookService.updateBook(bookEntity);
+
+        //response
+        List<BookDTO> bookDTOList = bookEntityList.stream().map(BookDTO::new).collect(Collectors.toList());
+        ResponseDTO<BookDTO> responseDTO = ResponseDTO.<BookDTO>builder().data(bookDTOList).build();
+        return ResponseEntity.ok().body(responseDTO);
+    }
 }
