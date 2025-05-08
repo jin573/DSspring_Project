@@ -16,11 +16,14 @@ public class BookDTO {
     private String author;
     private String publisher;
 
+    private String userId;
+
     public BookDTO(final BookEntity entity){
         this.id = entity.getId();
         this.title = entity.getTitle();
         this.author = entity.getAuthor();
         this.publisher = entity.getPublisher();
+        this.userId = entity.getUserId();
     }
 
     public static BookEntity toEntity(final BookDTO bookDTO){
@@ -29,6 +32,7 @@ public class BookDTO {
                 .title(bookDTO.getTitle())
                 .author(bookDTO.getAuthor())
                 .publisher(bookDTO.getPublisher())
+                .userId(bookDTO.getUserId())
                 .build();
     }
 }
