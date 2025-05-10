@@ -63,12 +63,12 @@ public class BookController {
     /*제품의 title이 JSON 형태로 입력되면
     * 해당하는 bookEntity를 반환해야 한다.*/
     @GetMapping("/search")
-    public ResponseEntity<?> getBookToList(@RequestBody BookDTO bookDTO){
+    public ResponseEntity<?> getBookToList(@RequestParam String title){
         /* 클라이언트가 book title을 검색 시
         * 동일한 책 제목의 다른 출반사가 있을 수 있으므로, list 형태로 반환한다.
         * 모든 titel이 아닌, 클라이언트의 bookList 중에서 반환해야 하므로 userID와 함께 검색한다.*/
         String temporaryUserId = "KimJinSeon";
-        List<BookEntity> bookEntityList = bookService.getBookToList(temporaryUserId, bookDTO.getTitle()); //service에서 검색하여 entity에 반환
+        List<BookEntity> bookEntityList = bookService.getBookToList(temporaryUserId, title); //service에서 검색하여 entity에 반환
         System.out.println(bookEntityList.stream().toList());
 
         //response body에 담기 위해 dto로 변경한다.
