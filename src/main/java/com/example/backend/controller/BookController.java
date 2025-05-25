@@ -6,6 +6,7 @@ import com.example.backend.model.BookEntity;
 import com.example.backend.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.print.Book;
@@ -25,13 +26,13 @@ public class BookController {
     * bookDTO 객체를 입력하고
     * 추가 시 마다, 전체 리스트를 반환해야 한다.*/
     @PostMapping
-    public ResponseEntity<?> createBook(@RequestBody BookDTO bookDTO){
+    public ResponseEntity<?> createBook(@AuthenticationPrincipal String userId, @RequestBody BookDTO bookDTO){
         try{
             //userID는 본인의 영문명으로 해야 하므로 코드 안에서 임의로 저장한다.
-            String temporaryUserId = "KimJinSeon";
+            //String temporaryUserId = "KimJinSeon";
             BookEntity bookEntity = BookDTO.toEntity(bookDTO);
             bookEntity.setId(null);
-            bookEntity.setUserId(temporaryUserId);
+            bookEntity.setUserId(userId);
 
             //entity 리스트에 추가한다.
             List<BookEntity> bookEntityList = bookService.createBook(bookEntity);
@@ -49,10 +50,10 @@ public class BookController {
 
     /*userID 가 가지고 있는 모든 도서 데이터를 반환한다. */
     @GetMapping
-    public ResponseEntity<?> getAllBookList(){
+    public ResponseEntity<?> getAllBookList(@AuthenticationPrincipal String userId){
         //userid 로 저장된 book entity 검색한다.
-        String temporaryUserId = "KimJinSeon";
-        List<BookEntity> bookEntityList = bookService.getAllBookList(temporaryUserId);
+        //String temporaryUserId = "KimJinSeon";
+        List<BookEntity> bookEntityList = bookService.getAllBookList(userId);
 
         //response body에 담기 위해 dto로 변경한다.
         List<BookDTO> bookDTOList = bookEntityList.stream().map(BookDTO::new).collect(Collectors.toList());
@@ -63,12 +64,12 @@ public class BookController {
     /*제품의 title이 JSON 형태로 입력되면
     * 해당하는 bookEntity를 반환해야 한다.*/
     @GetMapping("/search")
-    public ResponseEntity<?> getBookToList(@RequestParam String title){
+    public ResponseEntity<?> getBookToList(@AuthenticationPrincipal String userId, @RequestParam String title){
         /* 클라이언트가 book title을 검색 시
         * 동일한 책 제목의 다른 출반사가 있을 수 있으므로, list 형태로 반환한다.
         * 모든 titel이 아닌, 클라이언트의 bookList 중에서 반환해야 하므로 userID와 함께 검색한다.*/
-        String temporaryUserId = "KimJinSeon";
-        List<BookEntity> bookEntityList = bookService.getBookToList(temporaryUserId, title); //service에서 검색하여 entity에 반환
+        //String temporaryUserId = "KimJinSeon";
+        List<BookEntity> bookEntityList = bookService.getBookToList(userId, title); //service에서 검색하여 entity에 반환
         System.out.println(bookEntityList.stream().toList());
 
         //response body에 담기 위해 dto로 변경한다.
@@ -83,11 +84,11 @@ public class BookController {
     * title 값을 수정해야 한다.
     * 수정된 제품의 정보만 반환한다.*/
     @PutMapping
-    public ResponseEntity<?> updateBook(@RequestBody BookDTO bookDTO){
+    public ResponseEntity<?> updateBook(@AuthenticationPrincipal String userId, @RequestBody BookDTO bookDTO){
         //입력된 dto에 userID를 추가해준다.
-        String temporaryUserId = "KimJinSeon";
+        //String temporaryUserId = "KimJinSeon";
         BookEntity bookEntity = BookDTO.toEntity(bookDTO);
-        bookEntity.setUserId(temporaryUserId);
+        bookEntity.setUserId(userId);
 
         //해당 dto가 존재하는지 확인 후 있으면 새로운 title로 변경한다.
         List<BookEntity> bookEntityList = bookService.updateBook(bookEntity);
@@ -102,12 +103,12 @@ public class BookController {
     * 해당 id를 가진 책 데이터를 삭제한 후
     * 전체 리스트를 반환한다.*/
     @DeleteMapping
-    public ResponseEntity<?> deleteBook(@RequestBody BookDTO bookDTO){
+    public ResponseEntity<?> deleteBook(@AuthenticationPrincipal String userId, @RequestBody BookDTO bookDTO){
         try{
             //userID는 임의로 저장되어있으므로 다시 저장한 후 검색한다.
-            String temporaryUserId = "KimJinSeon";
+            //String temporaryUserId = "KimJinSeon";
             BookEntity bookEntity = BookDTO.toEntity(bookDTO);
-            bookEntity.setUserId(temporaryUserId);
+            bookEntity.setUserId(userId);
 
             //해당 dto가 존재하는지 확인 후 삭제한다.
             List<BookEntity> bookEntityList = bookService.deleteBook(bookEntity);
