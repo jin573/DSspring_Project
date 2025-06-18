@@ -58,13 +58,20 @@ public class BookService {
 
         //title을 변경한다.
         optionalBookEntity.ifPresent(book ->{
-            book.setTitle(bookEntity.getTitle());
+            checkBookState(book, bookEntity);
             bookRepository.save(book);
         });
 
         /* 변경된 book entity를 반환한다. id는 데이터마다 고유한 값을 가지므로
         * getBookToList를 사용하여 하나의 값만 반환하게 한다.*/
         return getBookToList(bookEntity.getUserId(), bookEntity.getTitle());
+    }
+
+    private void checkBookState(BookEntity originalBook, BookEntity updateBook){
+        if(updateBook.getTitle() != null) originalBook.setTitle(updateBook.getTitle());
+        if(updateBook.getAuthor() != null) originalBook.setAuthor(updateBook.getAuthor());
+        if(updateBook.getPublisher() != null) originalBook.setPublisher(updateBook.getPublisher());
+
     }
 
     public List<BookEntity> deleteBook(BookEntity bookEntity) {
