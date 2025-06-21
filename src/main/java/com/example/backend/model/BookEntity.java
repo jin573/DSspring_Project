@@ -1,9 +1,7 @@
 package com.example.backend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.example.backend.Enum.Category;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,4 +24,7 @@ public class BookEntity {
     private String title;
     private String author;
     private String publisher;
+    @Enumerated(EnumType.STRING)
+    private Category category;
+
 }
