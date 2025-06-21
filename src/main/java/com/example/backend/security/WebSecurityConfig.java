@@ -42,10 +42,6 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         //POST, PUT, DELETE 기능은 오직 관리자만 접근할 수 있다.
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/book/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/book/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/book/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/book/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/", "/auth/**", "/oauth2/**").permitAll()
                         .anyRequest().authenticated()
                 )

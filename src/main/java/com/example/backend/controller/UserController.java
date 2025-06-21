@@ -62,7 +62,7 @@ public class UserController {
                 passwordEncoder
         );
 
-        if(user != null){
+        if(user != null && user.getRole().equals("ROLE_USER")){
             //토큰 생성
             final String token = tokenProvider.create(user);
             final UserDTO responseUserDTO = UserDTO.builder()

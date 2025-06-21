@@ -63,7 +63,7 @@ public class AdminController {
                 passwordEncoder
         );
 
-        if(adminUser != null){
+        if(adminUser != null && adminUser.getRole().equals("ROLE_ADMIN")){
             //토큰 생성
             final String token = tokenProvider.create(adminUser);
             final UserDTO responseUserDTO = UserDTO.builder()
