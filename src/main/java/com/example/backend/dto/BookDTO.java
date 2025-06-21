@@ -1,5 +1,6 @@
 package com.example.backend.dto;
 
+import com.example.backend.Enum.Category;
 import com.example.backend.model.BookEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +17,7 @@ public class BookDTO {
     private String author;
     private String publisher;
 
+    private Category category;
     private String userId;
 
     public BookDTO(final BookEntity entity){
@@ -23,6 +25,7 @@ public class BookDTO {
         this.title = entity.getTitle();
         this.author = entity.getAuthor();
         this.publisher = entity.getPublisher();
+        this.category = entity.getCategory();
         this.userId = entity.getUserId();
     }
 
@@ -32,6 +35,7 @@ public class BookDTO {
                 .title(bookDTO.getTitle())
                 .author(bookDTO.getAuthor())
                 .publisher(bookDTO.getPublisher())
+                .category(bookDTO.getCategory())
                 .userId(bookDTO.getUserId())
                 .build();
     }

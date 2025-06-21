@@ -29,10 +29,11 @@ public class BookController {
     * bookDTO 객체를 입력하고
     * 추가 시 마다, 전체 리스트를 반환해야 한다.*/
     @PostMapping
-    public ResponseEntity<?> createBook(@AuthenticationPrincipal String userId, @RequestBody BookDTO bookDTO){
+    public ResponseEntity<?> createBook(Authentication authentication, @RequestBody BookDTO bookDTO){
         try{
             //userID는 본인의 영문명으로 해야 하므로 코드 안에서 임의로 저장한다.
             //String temporaryUserId = "KimJinSeon";
+            String userId = authentication.getName(); // 로그인된 사용자 ID
             BookEntity bookEntity = BookDTO.toEntity(bookDTO);
             bookEntity.setId(null);
             bookEntity.setUserId(userId);
