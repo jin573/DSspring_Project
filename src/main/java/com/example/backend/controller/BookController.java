@@ -6,6 +6,7 @@ import com.example.backend.model.BookEntity;
 import com.example.backend.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,7 @@ public class BookController {
     /*
     * bookDTO 객체를 입력하고
     * 추가 시 마다, 전체 리스트를 반환해야 한다.*/
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> createBook(@AuthenticationPrincipal String userId, @RequestBody BookDTO bookDTO){
         try{
@@ -83,6 +85,7 @@ public class BookController {
     * 해당 id의 제품 정보를 검색하고,
     * title 값을 수정해야 한다.
     * 수정된 제품의 정보만 반환한다.*/
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping
     public ResponseEntity<?> updateBook(@AuthenticationPrincipal String userId, @RequestBody BookDTO bookDTO){
         //입력된 dto에 userID를 추가해준다.
@@ -102,6 +105,7 @@ public class BookController {
     /*클라이언트는 검색 된 책 데이터들 중 하나의 제품 id만 복사하여 입력한다.
     * 해당 id를 가진 책 데이터를 삭제한 후
     * 전체 리스트를 반환한다.*/
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping
     public ResponseEntity<?> deleteBook(@AuthenticationPrincipal String userId, @RequestBody BookDTO bookDTO){
         try{
