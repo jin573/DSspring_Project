@@ -17,58 +17,59 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("auth")
-public class UserController {
-
+@RequestMapping("auth/admin")
+public class AdminController {
     @Autowired
     private UserService userService;
     @Autowired
     private TokenProvider tokenProvider;
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@RequestBody UserDTO userDTO){
+    public ResponseEntity<?> registerAdmin(@RequestBody UserDTO adminDTO){
         try{
-            if(userDTO == null || userDTO.getPassword() == null) {
+            if(adminDTO == null || adminDTO.getPassword() == null){
                 throw new RuntimeException("Invalid Password value");
             }
-            UserEntity user = UserEntity.builder()
-                    .username(userDTO.getUsername())
-                    .password(passwordEncoder.encode(userDTO.getPassword())) //패스워드가 암호화되어 저장되어야 한다
-                    //userController의 엔드 포인트로 들어오는 경우 무조건 일반 유저 권한을 부여한다
-                    .role(userDTO.getRole() != null ? userDTO.getRole() : "ROLE_USER")
-                    .build();
 
-            UserEntity registeredUser = userService.create(user);
-            UserDTO responseUserDTO = UserDTO.builder()
+            UserEntity adminUser = UserEntity.builder()
+                    .username(adminDTO.getUsername())
+                    .password(passwordEncoder.encode(adminDTO.getPassword()))
+                    .role("ROLE_ADMIN")
+                    .build();
+            UserEntity registeredUser = userService.create(adminUser);
+            UserDTO responseAdminDTO = UserDTO.builder()
                     .id(registeredUser.getId())
                     .username(registeredUser.getUsername())
                     .role(registeredUser.getRole())
                     .build();
 
-            return  ResponseEntity.ok().body(responseUserDTO);
+            return  ResponseEntity.ok().body(responseAdminDTO);
         }catch(Exception e){
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
             return ResponseEntity.badRequest().body(responseDTO);
         }
 
+
+
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticate(@RequestBody UserDTO userDTO){
-        UserEntity user = userService.getByCredentials(
-                userDTO.getUsername(),
-                userDTO.getPassword(),
+    public ResponseEntity<?> authenticate(@RequestBody UserDTO adminDTO){
+        UserEntity adminUser = userService.getByCredentials(
+                adminDTO.getUsername(),
+                adminDTO.getPassword(),
                 passwordEncoder
         );
 
-        if(user != null && user.getRole().equals("ROLE_USER")){
+        if(adminUser != null && adminUser.getRole().equals("ROLE_ADMIN")){
             //토큰 생성
-            final String token = tokenProvider.create(user);
+            final String token = tokenProvider.create(adminUser);
             final UserDTO responseUserDTO = UserDTO.builder()
-                    .username(user.getUsername())
-                    .id(user.getId())
-                    .role(user.getRole())
+                    .username(adminUser.getUsername())
+                    .id(adminUser.getId())
+                    .role(adminUser.getRole())
                     .token(token)
                     .build();
             return ResponseEntity.ok().body(responseUserDTO);
@@ -81,5 +82,4 @@ public class UserController {
                     .body(responseDTO);
         }
     }
-
 }

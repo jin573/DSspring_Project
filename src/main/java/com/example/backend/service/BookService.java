@@ -49,7 +49,7 @@ public class BookService {
         return bookRepository.findByUserIdAndTitle(temporaryUserId, bookTitle);
     }
 
-    public List<BookEntity> updateBook(final BookEntity bookEntity) {
+    public List<BookEntity> updateBook(final BookEntity bookEntity, boolean isAdmin) {
         //entity의 값을 변경했으므로 유효성 검사를 한다.
         validate(bookEntity);
 
@@ -58,13 +58,19 @@ public class BookService {
 
         //title을 변경한다.
         optionalBookEntity.ifPresent(book ->{
+            if (!isAdmin && !book.getUserId().equals(bookEntity.getUserId())) {
+                throw new RuntimeException("다른 사용자의 책은 수정할 수 없습니다.");
+            }
             checkBookState(book, bookEntity);
             bookRepository.save(book);
         });
-
         /* 변경된 book entity를 반환한다. id는 데이터마다 고유한 값을 가지므로
-        * getBookToList를 사용하여 하나의 값만 반환하게 한다.*/
-        return getBookToList(bookEntity.getUserId(), bookEntity.getTitle());
+         * getBookToList를 사용하여 하나의 값만 반환하게 한다.*/
+        if (isAdmin) {
+            return bookRepository.findByTitle(bookEntity.getTitle());
+        } else {
+            return getBookToList(bookEntity.getUserId(), bookEntity.getTitle());
+        }
     }
 
     private void checkBookState(BookEntity originalBook, BookEntity updateBook){
@@ -74,17 +80,33 @@ public class BookService {
 
     }
 
-    public List<BookEntity> deleteBook(BookEntity bookEntity) {
+    public List<BookEntity> deleteBook(BookEntity bookEntity, boolean isAdmin) {
         //해당 id로 하는 entity가 존재하는지 확인한다.
         validate(bookEntity);
 
-        try{
-            bookRepository.delete(bookEntity);
-        }catch (Exception e){
-            log.error("error deleting entity", bookEntity.getId(), e);
+        try {
+            Optional<BookEntity> optionalBook = bookRepository.findById(bookEntity.getId());
 
+            optionalBook.ifPresent(book -> {
+                if (!isAdmin && !book.getUserId().equals(bookEntity.getUserId())) {
+                    throw new RuntimeException("다른 사용자의 책은 삭제할 수 없습니다.");
+                }
+                bookRepository.delete(book);
+            });
+        } catch (Exception e) {
+            log.error("error deleting entity", bookEntity.getId(), e);
             throw new RuntimeException("error deleting entity" + bookEntity.getId());
         }
-        return getAllBookList(bookEntity.getUserId());
+
+        // 삭제 후 리스트 반환
+        return isAdmin ? getAllBooks() : getAllBookList(bookEntity.getUserId());
+    }
+
+    public List<BookEntity> getAllBooks() {
+        return bookRepository.findAll();
+    }
+
+    public List<BookEntity> getAllBooksByTitle(String title) {
+        return bookRepository.findByTitle(title);
     }
 }

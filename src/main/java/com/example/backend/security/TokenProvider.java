@@ -27,6 +27,7 @@ public class TokenProvider {
         return Jwts.builder()
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
                 .setSubject(userPrincipal.getName())
+                .claim("role", "ROLE_USER") //소셜 로그인 시 무조건 일반 유저 권한을 부여받는다.
                 .setIssuer("demo app")
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
@@ -42,6 +43,7 @@ public class TokenProvider {
         return Jwts.builder()
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
                 .setSubject(userEntity.getId())
+                .claim("role", userEntity.getRole()) //권한 부여
                 .setIssuer("demo app")
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
@@ -57,5 +59,15 @@ public class TokenProvider {
 
         return claims.getSubject();
     }
+
+    //토큰을 통해 권한 가져오는 메서드 추가
+    public String validateAndGetUserRole(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(SECRET_KEY)
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get("role", String.class);
+    }
+
 
 }
