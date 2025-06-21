@@ -35,12 +35,15 @@ public class UserController {
             UserEntity user = UserEntity.builder()
                     .username(userDTO.getUsername())
                     .password(passwordEncoder.encode(userDTO.getPassword())) //패스워드가 암호화되어 저장되어야 한다
+                    //userController의 엔드 포인트로 들어오는 경우 무조건 일반 유저 권한을 부여한다
+                    .role(userDTO.getRole() != null ? userDTO.getRole() : "ROLE_USER")
                     .build();
 
             UserEntity registeredUser = userService.create(user);
             UserDTO responseUserDTO = UserDTO.builder()
                     .id(registeredUser.getId())
                     .username(registeredUser.getUsername())
+                    .role(registeredUser.getRole())
                     .build();
 
             return  ResponseEntity.ok().body(responseUserDTO);
@@ -65,6 +68,7 @@ public class UserController {
             final UserDTO responseUserDTO = UserDTO.builder()
                     .username(user.getUsername())
                     .id(user.getId())
+                    .role(user.getRole())
                     .token(token)
                     .build();
             return ResponseEntity.ok().body(responseUserDTO);
