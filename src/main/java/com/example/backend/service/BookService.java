@@ -77,7 +77,7 @@ public class BookService {
         if(updateBook.getTitle() != null) originalBook.setTitle(updateBook.getTitle());
         if(updateBook.getAuthor() != null) originalBook.setAuthor(updateBook.getAuthor());
         if(updateBook.getPublisher() != null) originalBook.setPublisher(updateBook.getPublisher());
-
+        if(updateBook.getCategory() != null) originalBook.setCategory(updateBook.getCategory());
     }
 
     public List<BookEntity> deleteBook(BookEntity bookEntity, boolean isAdmin) {

@@ -30,4 +30,16 @@ public class RatingService {
     public Double getAvgRatingsByBook(String title, String author, String publisher){
         return ratingRepository.findAverageRatingByBookId(title, author, publisher);
     }
+
+    public void deleteByUserIdAndBookId(String userId, String bookId){
+        ratingRepository.deleteByUserIdAndBookId(userId, bookId);
+    }
+
+    public void deleteByBookId(String bookId) {
+        ratingRepository.deleteByBookId(bookId);
+    }
+
+    public List<RatingEntity> getAllRating(){
+        return ratingRepository.findAll();
+    }
 }
