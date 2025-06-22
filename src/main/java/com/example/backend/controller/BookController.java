@@ -4,6 +4,7 @@ import com.example.backend.dto.BookDTO;
 import com.example.backend.dto.ResponseDTO;
 import com.example.backend.model.BookEntity;
 import com.example.backend.service.BookService;
+import com.example.backend.service.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,6 +25,8 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
+    @Autowired
+    private RatingService ratingService;
 
     /*
     * bookDTO 객체를 입력하고
@@ -149,6 +152,10 @@ public class BookController {
 
             if(!isAdmin){
                 bookEntity.setUserId(userId);  // 일반 유저는 본인 도서만 삭제 가능
+                ratingService.deleteByUserIdAndBookId(userId, bookEntity.getId());
+
+            }else{
+                ratingService.deleteByBookId(bookEntity.getId());
             }
 
             List<BookEntity> bookEntityList = bookService.deleteBook(bookEntity, isAdmin);
